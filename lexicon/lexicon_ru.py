@@ -18,6 +18,7 @@ LEXICON_RU: dict[str, str] = {
     "responsible_for_implementation": "ответственный",
     "period_of_execution": "недель на устранение",
     "expected_result": "ожидаемый результат",
+    "event_first": "первое мероприятие",
     "event_second": "второе мероприятие"
 
 }
