@@ -19,6 +19,11 @@ LEXICON_RU: dict[str, str] = {
     "period_of_execution": "недель на устранение",
     "expected_result": "ожидаемый результат",
     "event_first": "первое мероприятие",
-    "event_second": "второе мероприятие"
+    "event_second": "второе мероприятие",
+    "photo_before": "фото до",
+    "photo_after": "фото после",
+    "button_reject": "отклонить",
+    "button_accept": "принять",
+    "error": "не заполнено значение"
 
 }

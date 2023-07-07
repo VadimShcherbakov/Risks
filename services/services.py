@@ -3,6 +3,16 @@
 import json
 
 
+class InputDataError(Exception):
+    """Класс для создания собственных ошибок"""
+
+    def __init__(self, data):
+        self.data = data
+
+    def __str__(self):
+        return repr(self.data)
+
+
 def read_json(filename: str):
     """Функция для чтения файла json"""
     with open(filename, 'r', encoding='utf-8') as file:
@@ -43,8 +53,8 @@ def get_region(axes: str, rows: str, description: str, *args: list) -> str:
     :return: возвращает f строку отформатированную под необходимый формат
     """
     if len(axes) and len(rows) > 0:
-        return f"ряд {rows}, ось {get_num_axes(int(axes), args[-1])}, {description}"
-    return description
+        return f"ряд {rows}, ось {get_num_axes(int(axes), args[-1])} {description}"
+    return description.strip()
 
 def write_from_excel_to_sql_zone():
     """Вспомогательный скрипт для записи номера зоны из excel в sql"""

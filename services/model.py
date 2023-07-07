@@ -77,7 +77,7 @@ class DoneRisk(BaseModel):
     """Создание класса модели выполненных рисков """
     unique_number_id = CharField(primary_key=True, unique=True)
     num_risk = ForeignKeyField(Risk, to_field='risk_id')
-    status = CharField()
+    status = CharField(default='выполнено')
     explanations = CharField()
     after_severity_assessmentinput = IntegerField()
     after_probability_estimation = IntegerField()
