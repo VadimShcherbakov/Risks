@@ -19,11 +19,13 @@ class TroubleshootingRisk:
 
     def determination_probability(self):
         db = SqliteDatabase('services/data/risks.db')
+        full_done_status = 0
         count_entries = db.execute_sql(f"""select count_entries from risks
                                  WHERE risk_id = {self.num_risk}""").fetchone()[0]
         if count_entries == 1:
             after_severity_assessmentinput = 1
             after_probability_estimation = 1
+            full_done_status = 1
         else:
             list_done = [i[0] for i in db.execute_sql(f"""SELECT status from event_risks as er
                                     LEFT JOIN done_risks as dr USING (unique_number_id)
@@ -31,6 +33,7 @@ class TroubleshootingRisk:
             if any(list_done):
                 after_severity_assessmentinput = 1
                 after_probability_estimation = 1
+                full_done_status = 1
             else:
                 after_severity_assessmentinput = db.execute_sql(f"""SELECT before_severity_assessmentinput from risks 
                                                                     where risk_id = {self.num_risk}""").fetchone()[0]
@@ -40,17 +43,18 @@ class TroubleshootingRisk:
                     after_probability_estimation = before_probability_estimation
                 else:
                     after_probability_estimation = before_probability_estimation - 1
-        return after_severity_assessmentinput, after_probability_estimation
+        return after_severity_assessmentinput, after_probability_estimation, full_done_status
 
     def create_picture(self) -> None:
         """Создаёт интерфейс просмотра рисков до и после выполнения"""
         explanations = db.execute_sql(f"SELECT expected_result from event_risks where unique_number_id like '{self.unique_number}'").fetchone()[0]
         elimination_measures = db.execute_sql(f"SELECT elimination_measures from event_risks where unique_number_id like '{self.unique_number}'").fetchone()[0]
         way_photo_before = db.execute_sql(f"SELECT photo_before from risks where risk_id = {self.num_risk}").fetchone()[0]
-        after_severity_assessmentinput, after_probability_estimation = self.determination_probability()
+        after_severity_assessmentinput, after_probability_estimation, full_done_status = self.determination_probability()
         after_grade = after_severity_assessmentinput*after_probability_estimation
         after_significance_level = significance_level(after_grade)
         photo_after = os.path.join(photo_record_risk_after, f'{self.unique_number}.JPG')
+        date_elimination = datetime.datetime.now().date()
 
         def clic_button_accept() -> None:
             """Собирает и записывает данные если была нажата кнопка принять"""
@@ -63,9 +67,15 @@ class TroubleshootingRisk:
                 after_grade=after_grade,
                 after_significance_level=after_significance_level,
                 photo_after=photo_after,
-                date_elimination=datetime.datetime.now().date()
+                date_elimination=date_elimination
             )
             shutil.move(os.path.join(photo_raw_risk_after, raw_photo_name), photo_after)
+            if full_done_status ==1:
+                FullDoneRISK.create(
+                    risk_id=self.num_risk,
+                    date_elimination=date_elimination
+
+            )
             frame.destroy()
 
         def clic_button_reject() -> None:

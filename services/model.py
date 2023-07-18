@@ -55,6 +55,18 @@ class Risk(BaseModel):
         db_table = 'risks'
 
 
+class FullDoneRISK(BaseModel):
+    """Создание класса модели рисков (основной таблицы)"""
+    risk_id = ForeignKeyField(Risk, to_field='risk_id')
+    date_elimination = DateField()
+    status = CharField(default='риск полностью устранён')
+
+    class Meta:
+        """Указываем рабочую модель таблицу риски"""
+        db_table = 'full_done_risks'
+        primary_key = False
+
+
 class EventRisk(BaseModel):
     """Создание класса модели рисков (основной таблицы)"""
     unique_number_id = CharField(primary_key=True, unique=True)

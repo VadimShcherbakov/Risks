@@ -56,6 +56,7 @@ def get_region(axes: str, rows: str, description: str, *args: list) -> str:
         return f"ряд {rows}, ось {get_num_axes(int(axes), args[-1])} {description}"
     return description.strip()
 
+
 def write_from_excel_to_sql_zone():
     """Вспомогательный скрипт для записи номера зоны из excel в sql"""
     from peewee import SqliteDatabase
@@ -170,8 +171,25 @@ def write_from_excel_to_sql_done():
                 )
 
 
+def write_from_excel_to_sql_full_done():
+    """Вспомогательный скрипт для записи только полностью выполненных рисков из excel в sql"""
+    from peewee import SqliteDatabase
+    from model import FullDoneRISK
+    import pandas as pd
+
+    db = SqliteDatabase('data/risks.db')
+    FullDoneRISK.create_table()
+    df = pd.read_excel('data/full_done_risks.xlsx')
+    for i in df.index:
+        print(i)
+        FullDoneRISK.create(
+            risk_id=int(df.loc[i, 'risk_id']),
+            date_elimination=df.loc[i, 'date_elimination']
+                )
+
 # write_from_excel_to_sql_zone()
 # write_from_json_to_sql()
 # write_from_excel_to_sql_risk()
 # write_from_excel_to_sql_event()
 # write_from_excel_to_sql_done()
+# write_from_excel_to_sql_full_done()
